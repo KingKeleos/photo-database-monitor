@@ -82,7 +82,7 @@ func (client *MonitorClient) UpdateSocials(projectName string, in uint32, id str
 		Count: &in,
 	}
 
-	_, err := DatabaseMonitor.DatabaseMonitorClient.UpdatePostsToProject(client.Client, context.Background(), &request)
+	_, err := DatabaseMonitor.DatabaseMonitorClient.UpdateSocials(client.Client, context.Background(), &request)
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,6 @@ go 1.21.4
 require (
 	github.com/golang/protobuf v1.5.3
 	github.com/jtaczanowski/go-graphite-client v1.1.0
-	github.com/lib/pq v1.10.9
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )

@@ -25,21 +25,21 @@ func TestNewClient(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	err = client.UpdateParticipantsToProject("test-project", 5)
+	err = client.UpdateParticipantsToProject("test-project", 5, "1")
 	if err != nil {
 		t.Errorf("Error occured: %v", err)
 	}
 
 	time.Sleep(1 * time.Second)
 
-	err = client.UpdateParticipantsToProject("test-project2", 1)
+	err = client.UpdateParticipantsToProject("test-project2", 1, "2")
 	if err != nil {
 		t.Errorf("Error occured: %v", err)
 	}
 
 	time.Sleep(1 * time.Second)
 
-	err = client.UpdatePostsToProject("test-project2", 3)
+	err = client.UpdatePostsToProject("test-project2", 3, "2")
 	if err != nil {
 		t.Errorf("Error occured: %v", err)
 	}

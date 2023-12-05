@@ -47,8 +47,9 @@ func (client *MonitorClient) UpdatePeople(in uint32) error {
 	return nil
 }
 
-func (client *MonitorClient) UpdateParticipantsToProject(projectName string, in uint32) error {
-	request := DatabaseMonitor.CountToProjectRequest{
+func (client *MonitorClient) UpdateParticipantsToProject(projectName string, in uint32, id string) error {
+	request := DatabaseMonitor.CountToIDRequest{
+		ID:    &id,
 		Name:  &projectName,
 		Count: &in,
 	}
@@ -60,8 +61,23 @@ func (client *MonitorClient) UpdateParticipantsToProject(projectName string, in 
 	return nil
 }
 
-func (client *MonitorClient) UpdatePostsToProject(projectName string, in uint32) error {
-	request := DatabaseMonitor.CountToProjectRequest{
+func (client *MonitorClient) UpdatePostsToProject(projectName string, in uint32, id string) error {
+	request := DatabaseMonitor.CountToIDRequest{
+		ID:    &id,
+		Name:  &projectName,
+		Count: &in,
+	}
+
+	_, err := DatabaseMonitor.DatabaseMonitorClient.UpdatePostsToProject(client.Client, context.Background(), &request)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *MonitorClient) UpdateSocials(projectName string, in uint32, id string) error {
+	request := DatabaseMonitor.CountToIDRequest{
+		ID:    &id,
 		Name:  &projectName,
 		Count: &in,
 	}

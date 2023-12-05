@@ -26,13 +26,15 @@ type DatabaseMonitorClient interface {
 	// Increasing the number of Items, when endpoint is called
 	UpdateProjects(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error)
 	UpdatePeople(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error)
-	UpdateParticipantsToProject(ctx context.Context, in *CountToProjectRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	UpdatePostsToProject(ctx context.Context, in *CountToProjectRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	UpdateSocials(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error)
+	UpdateParticipantsToProject(ctx context.Context, in *CountToIDRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	UpdatePostsToProject(ctx context.Context, in *CountToIDRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	UpdateSocials(ctx context.Context, in *CountToIDRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	// Status of Projects
 	NewProjects(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error)
 	ActiveProjects(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error)
 	FinishedProjects(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error)
+	StoppedProjects(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error)
+	RejectedProjects(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type databaseMonitorClient struct {
@@ -61,7 +63,7 @@ func (c *databaseMonitorClient) UpdatePeople(ctx context.Context, in *UpdateCoun
 	return out, nil
 }
 
-func (c *databaseMonitorClient) UpdateParticipantsToProject(ctx context.Context, in *CountToProjectRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseMonitorClient) UpdateParticipantsToProject(ctx context.Context, in *CountToIDRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/DatabaseMonitor/UpdateParticipantsToProject", in, out, opts...)
 	if err != nil {
@@ -70,7 +72,7 @@ func (c *databaseMonitorClient) UpdateParticipantsToProject(ctx context.Context,
 	return out, nil
 }
 
-func (c *databaseMonitorClient) UpdatePostsToProject(ctx context.Context, in *CountToProjectRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseMonitorClient) UpdatePostsToProject(ctx context.Context, in *CountToIDRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/DatabaseMonitor/UpdatePostsToProject", in, out, opts...)
 	if err != nil {
@@ -79,7 +81,7 @@ func (c *databaseMonitorClient) UpdatePostsToProject(ctx context.Context, in *Co
 	return out, nil
 }
 
-func (c *databaseMonitorClient) UpdateSocials(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *databaseMonitorClient) UpdateSocials(ctx context.Context, in *CountToIDRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/DatabaseMonitor/UpdateSocials", in, out, opts...)
 	if err != nil {
@@ -115,6 +117,24 @@ func (c *databaseMonitorClient) FinishedProjects(ctx context.Context, in *Update
 	return out, nil
 }
 
+func (c *databaseMonitorClient) StoppedProjects(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/DatabaseMonitor/StoppedProjects", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *databaseMonitorClient) RejectedProjects(ctx context.Context, in *UpdateCountReqest, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
+	err := c.cc.Invoke(ctx, "/DatabaseMonitor/RejectedProjects", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DatabaseMonitorServer is the server API for DatabaseMonitor service.
 // All implementations must embed UnimplementedDatabaseMonitorServer
 // for forward compatibility
@@ -122,13 +142,15 @@ type DatabaseMonitorServer interface {
 	// Increasing the number of Items, when endpoint is called
 	UpdateProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error)
 	UpdatePeople(context.Context, *UpdateCountReqest) (*empty.Empty, error)
-	UpdateParticipantsToProject(context.Context, *CountToProjectRequest) (*empty.Empty, error)
-	UpdatePostsToProject(context.Context, *CountToProjectRequest) (*empty.Empty, error)
-	UpdateSocials(context.Context, *UpdateCountReqest) (*empty.Empty, error)
+	UpdateParticipantsToProject(context.Context, *CountToIDRequest) (*empty.Empty, error)
+	UpdatePostsToProject(context.Context, *CountToIDRequest) (*empty.Empty, error)
+	UpdateSocials(context.Context, *CountToIDRequest) (*empty.Empty, error)
 	// Status of Projects
 	NewProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error)
 	ActiveProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error)
 	FinishedProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error)
+	StoppedProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error)
+	RejectedProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error)
 	mustEmbedUnimplementedDatabaseMonitorServer()
 }
 
@@ -142,13 +164,13 @@ func (UnimplementedDatabaseMonitorServer) UpdateProjects(context.Context, *Updat
 func (UnimplementedDatabaseMonitorServer) UpdatePeople(context.Context, *UpdateCountReqest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePeople not implemented")
 }
-func (UnimplementedDatabaseMonitorServer) UpdateParticipantsToProject(context.Context, *CountToProjectRequest) (*empty.Empty, error) {
+func (UnimplementedDatabaseMonitorServer) UpdateParticipantsToProject(context.Context, *CountToIDRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateParticipantsToProject not implemented")
 }
-func (UnimplementedDatabaseMonitorServer) UpdatePostsToProject(context.Context, *CountToProjectRequest) (*empty.Empty, error) {
+func (UnimplementedDatabaseMonitorServer) UpdatePostsToProject(context.Context, *CountToIDRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePostsToProject not implemented")
 }
-func (UnimplementedDatabaseMonitorServer) UpdateSocials(context.Context, *UpdateCountReqest) (*empty.Empty, error) {
+func (UnimplementedDatabaseMonitorServer) UpdateSocials(context.Context, *CountToIDRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSocials not implemented")
 }
 func (UnimplementedDatabaseMonitorServer) NewProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error) {
@@ -159,6 +181,12 @@ func (UnimplementedDatabaseMonitorServer) ActiveProjects(context.Context, *Updat
 }
 func (UnimplementedDatabaseMonitorServer) FinishedProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishedProjects not implemented")
+}
+func (UnimplementedDatabaseMonitorServer) StoppedProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StoppedProjects not implemented")
+}
+func (UnimplementedDatabaseMonitorServer) RejectedProjects(context.Context, *UpdateCountReqest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RejectedProjects not implemented")
 }
 func (UnimplementedDatabaseMonitorServer) mustEmbedUnimplementedDatabaseMonitorServer() {}
 
@@ -210,7 +238,7 @@ func _DatabaseMonitor_UpdatePeople_Handler(srv interface{}, ctx context.Context,
 }
 
 func _DatabaseMonitor_UpdateParticipantsToProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CountToProjectRequest)
+	in := new(CountToIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -222,13 +250,13 @@ func _DatabaseMonitor_UpdateParticipantsToProject_Handler(srv interface{}, ctx c
 		FullMethod: "/DatabaseMonitor/UpdateParticipantsToProject",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseMonitorServer).UpdateParticipantsToProject(ctx, req.(*CountToProjectRequest))
+		return srv.(DatabaseMonitorServer).UpdateParticipantsToProject(ctx, req.(*CountToIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DatabaseMonitor_UpdatePostsToProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CountToProjectRequest)
+	in := new(CountToIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -240,13 +268,13 @@ func _DatabaseMonitor_UpdatePostsToProject_Handler(srv interface{}, ctx context.
 		FullMethod: "/DatabaseMonitor/UpdatePostsToProject",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseMonitorServer).UpdatePostsToProject(ctx, req.(*CountToProjectRequest))
+		return srv.(DatabaseMonitorServer).UpdatePostsToProject(ctx, req.(*CountToIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _DatabaseMonitor_UpdateSocials_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateCountReqest)
+	in := new(CountToIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -258,7 +286,7 @@ func _DatabaseMonitor_UpdateSocials_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/DatabaseMonitor/UpdateSocials",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DatabaseMonitorServer).UpdateSocials(ctx, req.(*UpdateCountReqest))
+		return srv.(DatabaseMonitorServer).UpdateSocials(ctx, req.(*CountToIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -317,6 +345,42 @@ func _DatabaseMonitor_FinishedProjects_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DatabaseMonitor_StoppedProjects_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCountReqest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseMonitorServer).StoppedProjects(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/DatabaseMonitor/StoppedProjects",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseMonitorServer).StoppedProjects(ctx, req.(*UpdateCountReqest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _DatabaseMonitor_RejectedProjects_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCountReqest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DatabaseMonitorServer).RejectedProjects(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/DatabaseMonitor/RejectedProjects",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DatabaseMonitorServer).RejectedProjects(ctx, req.(*UpdateCountReqest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DatabaseMonitor_ServiceDesc is the grpc.ServiceDesc for DatabaseMonitor service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -355,6 +419,14 @@ var DatabaseMonitor_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FinishedProjects",
 			Handler:    _DatabaseMonitor_FinishedProjects_Handler,
+		},
+		{
+			MethodName: "StoppedProjects",
+			Handler:    _DatabaseMonitor_StoppedProjects_Handler,
+		},
+		{
+			MethodName: "RejectedProjects",
+			Handler:    _DatabaseMonitor_RejectedProjects_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

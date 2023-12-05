@@ -5,12 +5,10 @@ import (
 
 	"github.com/KingKeleos/photo-database-monitor/cmd/server"
 	"github.com/KingKeleos/photo-database-monitor/graphite"
-	"github.com/KingKeleos/photo-database-monitor/postgres"
 )
 
 func main() {
 	graphite.NewClient()
-	postgres.ConnectToPostgres()
 
 	api := &server.API{}
 	err := api.Serve()

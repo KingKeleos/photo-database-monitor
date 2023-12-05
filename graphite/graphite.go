@@ -7,6 +7,6 @@ import (
 var Client *graphite.Client
 
 func NewClient() {
-	graphiteClient := graphite.NewClient("heimserver", 2003, "projects.projects", "tcp")
+	graphiteClient := graphite.NewClient("heimserver", 2003, "projects", "tcp")
 	Client = graphiteClient
 }

@@ -22,7 +22,7 @@ func createMap(name string, content float64) map[string]float64 {
 func (h Handler) UpdateProjects(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
 	count := float64(*request.CurrentCount)
 
-	metric := createMap("project_count", count)
+	metric := createMap("overview.project_count", count)
 
 	err := graphite.Client.SendData(metric)
 	if err != nil {
@@ -34,7 +34,7 @@ func (h Handler) UpdateProjects(ctx context.Context, request *DatabaseMonitor.Up
 func (h Handler) UpdatePeople(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
 	count := float64(*request.CurrentCount)
 
-	metric := createMap("people_count", count)
+	metric := createMap("overview.people_count", count)
 
 	err := graphite.Client.SendData(metric)
 	if err != nil {
@@ -46,7 +46,7 @@ func (h Handler) UpdatePeople(ctx context.Context, request *DatabaseMonitor.Upda
 func (h Handler) UpdateParticipantsToProject(ctx context.Context, request *DatabaseMonitor.CountToProjectRequest) (*emptypb.Empty, error) {
 	count := float64(*request.Count)
 
-	label := fmt.Sprintf("%s_participants", *request.Name)
+	label := fmt.Sprintf("projects.%s.participants", *request.Name)
 	metric := createMap(label, count)
 
 	err := graphite.Client.SendData(metric)
@@ -59,7 +59,7 @@ func (h Handler) UpdateParticipantsToProject(ctx context.Context, request *Datab
 func (h Handler) UpdatePostsToProject(ctx context.Context, request *DatabaseMonitor.CountToProjectRequest) (*emptypb.Empty, error) {
 	count := float64(*request.Count)
 
-	label := fmt.Sprintf("%s_posts", *request.Name)
+	label := fmt.Sprintf("projects.%s.posts", *request.Name)
 	metric := createMap(label, count)
 
 	err := graphite.Client.SendData(metric)
@@ -72,7 +72,7 @@ func (h Handler) UpdatePostsToProject(ctx context.Context, request *DatabaseMoni
 func (h Handler) UpdateSocials(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
 	count := float64(*request.CurrentCount)
 
-	metric := createMap("socials_count", count)
+	metric := createMap("people.socials_count", count)
 
 	err := graphite.Client.SendData(metric)
 	if err != nil {
@@ -84,7 +84,7 @@ func (h Handler) UpdateSocials(ctx context.Context, request *DatabaseMonitor.Upd
 func (h Handler) NewProjects(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
 	count := float64(*request.CurrentCount)
 
-	metric := createMap("new_projects", count)
+	metric := createMap("projects.states.new_projects", count)
 
 	err := graphite.Client.SendData(metric)
 	if err != nil {
@@ -96,7 +96,7 @@ func (h Handler) NewProjects(ctx context.Context, request *DatabaseMonitor.Updat
 func (h Handler) ActiveProjects(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
 	count := float64(*request.CurrentCount)
 
-	metric := createMap("active_projects", count)
+	metric := createMap("projects.states.active_projects", count)
 
 	err := graphite.Client.SendData(metric)
 	if err != nil {
@@ -108,7 +108,7 @@ func (h Handler) ActiveProjects(ctx context.Context, request *DatabaseMonitor.Up
 func (h Handler) FinishedProjects(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
 	count := float64(*request.CurrentCount)
 
-	metric := createMap("finished_projects", count)
+	metric := createMap("projects.states.finished_projects", count)
 
 	err := graphite.Client.SendData(metric)
 	if err != nil {

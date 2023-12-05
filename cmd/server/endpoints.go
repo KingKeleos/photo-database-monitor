@@ -72,7 +72,8 @@ func (h Handler) UpdatePostsToProject(ctx context.Context, request *DatabaseMoni
 func (h Handler) UpdateSocials(ctx context.Context, request *DatabaseMonitor.CountToIDRequest) (*emptypb.Empty, error) {
 	count := float64(*request.Count)
 
-	metric := createMap("people.socials_count", count)
+	label := fmt.Sprintf("people.%s_%s.socials", *request.ID, *request.Name)
+	metric := createMap(label, count)
 
 	err := graphite.Client.SendData(metric)
 	if err != nil {

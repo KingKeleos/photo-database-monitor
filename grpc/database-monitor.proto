@@ -1,0 +1,26 @@
+import "google/protobuf/empty.proto";
+
+option go_package = "./DatabaseMonitor";
+
+service DatabaseMonitor {
+    // Increasing the number of Items, when endpoint is called
+    rpc UpdateProjects (UpdateCountReqest) returns (google.protobuf.Empty) {}
+    rpc UpdatePeople (UpdateCountReqest) returns (google.protobuf.Empty) {}
+    rpc UpdateParticipantsToProject (CountToProjectRequest) returns (google.protobuf.Empty) {}
+    rpc UpdatePostsToProject (CountToProjectRequest) returns (google.protobuf.Empty) {}
+    rpc UpdateSocials (UpdateCountReqest) returns (google.protobuf.Empty) {}
+
+    // Status of Projects
+    rpc NewProjects (UpdateCountReqest) returns (google.protobuf.Empty) {}
+    rpc ActiveProjects (UpdateCountReqest) returns (google.protobuf.Empty) {}
+    rpc FinishedProjects (UpdateCountReqest) returns (google.protobuf.Empty) {}
+}
+
+message UpdateCountReqest {
+    required uint32 CurrentCount = 1;
+}
+
+message CountToProjectRequest {
+    required string Name = 1;
+    required uint32 Count = 2;
+}

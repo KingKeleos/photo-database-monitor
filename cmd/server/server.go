@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	DatabaseMonitor "github.com/kingkeleos/database-monitor/grpc"
+	DatabaseMonitor "github.com/KingKeleos/photo-database-monitor/grpc"
 	"google.golang.org/grpc"
 )
 

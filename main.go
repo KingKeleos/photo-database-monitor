@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/kingkeleos/database-monitor/cmd/server"
-	"github.com/kingkeleos/database-monitor/graphite"
-	"github.com/kingkeleos/database-monitor/postgres"
+	"github.com/KingKeleos/photo-database-monitor/cmd/server"
+	"github.com/KingKeleos/photo-database-monitor/graphite"
+	"github.com/KingKeleos/photo-database-monitor/postgres"
 )
 
 func main() {

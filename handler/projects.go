@@ -1,6 +1,6 @@
 package handler
 
-import "github.com/kingkeleos/database-monitor/postgres"
+import "github.com/KingKeleos/photo-database-monitor/postgres"
 
 func GetProjectCount() (float64, error) {
 	rows, err := postgres.Client.ExecQuery("SELECT Count(*) FROM projects;")

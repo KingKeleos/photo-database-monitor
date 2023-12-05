@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kingkeleos/database-monitor/graphite"
-	DatabaseMonitor "github.com/kingkeleos/database-monitor/grpc"
+	"github.com/KingKeleos/photo-database-monitor/graphite"
+	DatabaseMonitor "github.com/KingKeleos/photo-database-monitor/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

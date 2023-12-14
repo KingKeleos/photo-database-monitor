@@ -21,7 +21,7 @@ func createMap(name string, content float64) map[string]float64 {
 }
 
 func (h Handler) UpdateProjects() {
-	response, err := http.Get("http://localhost:90/projects")
+	response, err := http.Get("http://localhost:80/projects")
 	if err != nil {
 		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
@@ -46,7 +46,7 @@ func (h Handler) UpdateProjects() {
 }
 
 func (h Handler) UpdatePeople() {
-	response, err := http.Get("http://localhost:90/people")
+	response, err := http.Get("http://localhost:80/people")
 	if err != nil {
 		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
@@ -70,7 +70,7 @@ func (h Handler) UpdatePeople() {
 }
 
 func (h Handler) UpdateParticipantsToProjects() {
-	response, err := http.Get("http://localhost:90/projects")
+	response, err := http.Get("http://localhost:80/projects")
 	if err != nil {
 		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
@@ -113,7 +113,7 @@ func (h Handler) UpdateParticipantsToProjects() {
 }
 
 func (h Handler) UpdatePostsToProject() {
-	response, err := http.Get("http://localhost:90/projects")
+	response, err := http.Get("http://localhost:80/projects")
 	if err != nil {
 		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
@@ -128,7 +128,7 @@ func (h Handler) UpdatePostsToProject() {
 
 	for id, project := range projects {
 		id += 1
-		url := fmt.Sprintf("http://localhost:90/projects/%d/posts", id)
+		url := fmt.Sprintf("http://localhost:80/projects/%d/posts", id)
 		response, err := http.Get(url)
 		if err != nil {
 			log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
@@ -156,7 +156,7 @@ func (h Handler) UpdatePostsToProject() {
 }
 
 func (h Handler) UpdateSocials() {
-	response, err := http.Get("http://localhost:90/people")
+	response, err := http.Get("http://localhost:80/people")
 	if err != nil {
 		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
@@ -171,7 +171,7 @@ func (h Handler) UpdateSocials() {
 
 	for id, project := range people.People {
 		id += 1
-		url := fmt.Sprintf("http://localhost:90/people/%d/socials", id)
+		url := fmt.Sprintf("http://localhost:80/people/%d/socials", id)
 		response, err := http.Get(url)
 		if err != nil {
 			log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
@@ -199,7 +199,7 @@ func (h Handler) UpdateSocials() {
 }
 
 func (h Handler) NewProjects() {
-	response, err := http.Get("http://localhost:90/projects")
+	response, err := http.Get("http://localhost:80/projects")
 	if err != nil {
 		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
@@ -231,7 +231,7 @@ func (h Handler) NewProjects() {
 }
 
 func (h Handler) ActiveProjects() {
-	response, err := http.Get("http://localhost:90/projects")
+	response, err := http.Get("http://localhost:80/projects")
 	if err != nil {
 		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
@@ -263,7 +263,7 @@ func (h Handler) ActiveProjects() {
 }
 
 func (h Handler) FinishedProjects() {
-	response, err := http.Get("http://localhost:90/projects")
+	response, err := http.Get("http://localhost:80/projects")
 	if err != nil {
 		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}

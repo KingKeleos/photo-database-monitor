@@ -1,16 +1,17 @@
 package server
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"time"
 
 	"github.com/KingKeleos/photo-database-monitor/graphite"
-	DatabaseMonitor "github.com/KingKeleos/photo-database-monitor/grpc"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type Handler struct {
-	DatabaseMonitor.UnimplementedDatabaseMonitorServer
 }
 
 func createMap(name string, content float64) map[string]float64 {
@@ -19,101 +20,276 @@ func createMap(name string, content float64) map[string]float64 {
 	}
 }
 
-func (h Handler) UpdateProjects(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
-	count := float64(*request.CurrentCount)
-
-	metric := createMap("overview.project_count", count)
-
-	err := graphite.Client.SendData(metric)
+func (h Handler) UpdateProjects() {
+	response, err := http.Get("http://localhost:90/projects")
 	if err != nil {
-		return nil, err
+		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
-	return &emptypb.Empty{}, nil
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var projects []Project
+	json.Unmarshal(body, &projects)
+
+	count := len(projects)
+
+	metric := createMap("overview.project_count", float64(count))
+
+	err = graphite.Client.SendData(metric)
+	if err != nil {
+		fmt.Printf("Error occured sending data to Graphite: %v", err)
+	}
+	time.Sleep(500 * time.Millisecond)
 }
 
-func (h Handler) UpdatePeople(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
-	count := float64(*request.CurrentCount)
-
-	metric := createMap("overview.people_count", count)
-
-	err := graphite.Client.SendData(metric)
+func (h Handler) UpdatePeople() {
+	response, err := http.Get("http://localhost:90/people")
 	if err != nil {
-		return nil, err
+		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
-	return &emptypb.Empty{}, nil
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var people PeopleList
+	json.Unmarshal(body, &people)
+
+	count := len(people.People)
+	metric := createMap("overview.people_count", float64(count))
+
+	err = graphite.Client.SendData(metric)
+	if err != nil {
+		fmt.Printf("Error occured sending data to Graphite: %v", err)
+	}
+	time.Sleep(500 * time.Millisecond)
 }
 
-func (h Handler) UpdateParticipantsToProject(ctx context.Context, request *DatabaseMonitor.CountToIDRequest) (*emptypb.Empty, error) {
-	count := float64(*request.Count)
-
-	label := fmt.Sprintf("projects.%s_%s.participants", *request.ID, *request.Name)
-	metric := createMap(label, count)
-
-	err := graphite.Client.SendData(metric)
+func (h Handler) UpdateParticipantsToProjects() {
+	response, err := http.Get("http://localhost:90/projects")
 	if err != nil {
-		return nil, err
+		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
-	return &emptypb.Empty{}, nil
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var projects []Project
+	json.Unmarshal(body, &projects)
+
+	for id, project := range projects {
+		id += 1
+		url := fmt.Sprintf("http://localhost:90/projects/%d/participants", id)
+		response, err := http.Get(url)
+		if err != nil {
+			log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
+		}
+
+		body, err := io.ReadAll(response.Body)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		var socials []Socials
+		json.Unmarshal(body, &socials)
+
+		count := len(socials)
+
+		label := fmt.Sprintf("projects.%d_%s.participants", id, project.Name)
+		metric := createMap(label, float64(count))
+
+		err = graphite.Client.SendData(metric)
+		if err != nil {
+			fmt.Printf("Error occured sending data to Graphite: %v", err)
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
 }
 
-func (h Handler) UpdatePostsToProject(ctx context.Context, request *DatabaseMonitor.CountToIDRequest) (*emptypb.Empty, error) {
-	count := float64(*request.Count)
-
-	label := fmt.Sprintf("projects.%s_%s.posts", *request.ID, *request.Name)
-	metric := createMap(label, count)
-
-	err := graphite.Client.SendData(metric)
+func (h Handler) UpdatePostsToProject() {
+	response, err := http.Get("http://localhost:90/projects")
 	if err != nil {
-		return nil, err
+		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
-	return &emptypb.Empty{}, nil
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var projects []Project
+	json.Unmarshal(body, &projects)
+
+	for id, project := range projects {
+		id += 1
+		url := fmt.Sprintf("http://localhost:90/projects/%d/posts", id)
+		response, err := http.Get(url)
+		if err != nil {
+			log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
+		}
+
+		body, err := io.ReadAll(response.Body)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		var posts []Posts
+		json.Unmarshal(body, &posts)
+
+		count := len(posts)
+
+		label := fmt.Sprintf("projects.%d_%s.posts", id, project.Name)
+		metric := createMap(label, float64(count))
+
+		err = graphite.Client.SendData(metric)
+		if err != nil {
+			fmt.Printf("Error occured sending data to Graphite: %v", err)
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
 }
 
-func (h Handler) UpdateSocials(ctx context.Context, request *DatabaseMonitor.CountToIDRequest) (*emptypb.Empty, error) {
-	count := float64(*request.Count)
-
-	label := fmt.Sprintf("people.%s_%s.socials", *request.ID, *request.Name)
-	metric := createMap(label, count)
-
-	err := graphite.Client.SendData(metric)
+func (h Handler) UpdateSocials() {
+	response, err := http.Get("http://localhost:90/people")
 	if err != nil {
-		return nil, err
+		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
-	return &emptypb.Empty{}, nil
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var people PeopleList
+	json.Unmarshal(body, &people)
+
+	for id, project := range people.People {
+		id += 1
+		url := fmt.Sprintf("http://localhost:90/people/%d/socials", id)
+		response, err := http.Get(url)
+		if err != nil {
+			log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
+		}
+
+		body, err := io.ReadAll(response.Body)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		var socials []Socials
+		json.Unmarshal(body, &socials)
+
+		count := len(socials)
+
+		label := fmt.Sprintf("people.%d_%s.socials", id, project.Name)
+		metric := createMap(label, float64(count))
+
+		err = graphite.Client.SendData(metric)
+		if err != nil {
+			fmt.Printf("Error occured sending data to Graphite: %v", err)
+		}
+		time.Sleep(500 * time.Millisecond)
+	}
 }
 
-func (h Handler) NewProjects(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
-	count := float64(*request.CurrentCount)
-
-	metric := createMap("projects.states.new_projects", count)
-
-	err := graphite.Client.SendData(metric)
+func (h Handler) NewProjects() {
+	response, err := http.Get("http://localhost:90/projects")
 	if err != nil {
-		return nil, err
+		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
-	return &emptypb.Empty{}, nil
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var projects []Project
+	json.Unmarshal(body, &projects)
+
+	var newProjects []Project
+	for _, project := range projects {
+		if project.State == "Created" {
+			newProjects = append(newProjects, project)
+		}
+	}
+
+	count := len(newProjects)
+
+	metric := createMap("projects.states.new_projects", float64(count))
+
+	err = graphite.Client.SendData(metric)
+	if err != nil {
+		fmt.Printf("Error occured sending data to Graphite: %v", err)
+	}
+	time.Sleep(500 * time.Millisecond)
 }
 
-func (h Handler) ActiveProjects(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
-	count := float64(*request.CurrentCount)
-
-	metric := createMap("projects.states.active_projects", count)
-
-	err := graphite.Client.SendData(metric)
+func (h Handler) ActiveProjects() {
+	response, err := http.Get("http://localhost:90/projects")
 	if err != nil {
-		return nil, err
+		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
-	return &emptypb.Empty{}, nil
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var projects []Project
+	json.Unmarshal(body, &projects)
+
+	var activeProjects []Project
+	for _, project := range projects {
+		if project.State == "Active" {
+			activeProjects = append(activeProjects, project)
+		}
+	}
+
+	count := len(activeProjects)
+
+	metric := createMap("projects.states.active_projects", float64(count))
+
+	err = graphite.Client.SendData(metric)
+	if err != nil {
+		fmt.Printf("Error occured sending data to Graphite: %v", err)
+	}
+	time.Sleep(500 * time.Millisecond)
 }
 
-func (h Handler) FinishedProjects(ctx context.Context, request *DatabaseMonitor.UpdateCountReqest) (*emptypb.Empty, error) {
-	count := float64(*request.CurrentCount)
-
-	metric := createMap("projects.states.finished_projects", count)
-
-	err := graphite.Client.SendData(metric)
+func (h Handler) FinishedProjects() {
+	response, err := http.Get("http://localhost:90/projects")
 	if err != nil {
-		return nil, err
+		log.Fatal("Could not reach Database-Exporter for Metric, err: " + err.Error())
 	}
-	return &emptypb.Empty{}, nil
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var projects []Project
+	json.Unmarshal(body, &projects)
+
+	var finishedProjects []Project
+	for _, project := range projects {
+		if project.State == "Finished" {
+			finishedProjects = append(finishedProjects, project)
+		}
+	}
+
+	count := len(finishedProjects)
+
+	metric := createMap("projects.states.finished_projects", float64(count))
+
+	err = graphite.Client.SendData(metric)
+	if err != nil {
+		fmt.Printf("Error occured sending data to Graphite: %v", err)
+	}
+	time.Sleep(500 * time.Millisecond)
 }

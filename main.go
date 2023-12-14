@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"time"
 
 	"github.com/KingKeleos/photo-database-monitor/cmd/server"
 	"github.com/KingKeleos/photo-database-monitor/graphite"
@@ -10,9 +11,17 @@ import (
 func main() {
 	graphite.NewClient()
 
-	api := &server.API{}
-	err := api.Serve()
-	if err != nil {
-		log.Fatalf("Err: %v", err)
+	metricHandler := server.Handler{}
+
+	for range time.Tick(30 * time.Minute) {
+		fmt.Printf("Fetching metrics\n")
+		metricHandler.UpdateProjects()
+		metricHandler.UpdatePeople()
+		metricHandler.UpdateParticipantsToProjects()
+		metricHandler.UpdatePostsToProject()
+		metricHandler.UpdateSocials()
+		metricHandler.NewProjects()
+		metricHandler.ActiveProjects()
+		metricHandler.FinishedProjects()
 	}
 }

@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	fmt.Printf("Starting Monitoring-Exporter")
 	graphite.NewClient()
 
 	metricHandler := server.Handler{}
